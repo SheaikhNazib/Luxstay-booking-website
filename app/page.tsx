@@ -1,65 +1,122 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { MainLayout } from '@/components/main-layout';
+import { ServiceCard } from '@/components/service-card';
+import { getServices } from '@/lib/api';
 
-export default function Home() {
+const features = [
+  {
+    icon: '✦',
+    title: 'Luxury Rooms',
+    desc: 'Curated suites designed for exceptional comfort and style.',
+  },
+  {
+    icon: '⚡',
+    title: 'High-Speed Wi-Fi',
+    desc: 'Complimentary ultra-fast internet throughout the property.',
+  },
+  {
+    icon: '☕',
+    title: '24/7 Concierge',
+    desc: 'Round-the-clock personal assistance for every need.',
+  },
+  {
+    icon: '✈',
+    title: 'Airport Transfer',
+    desc: 'Seamless private transfers to and from the airport.',
+  },
+];
+
+export default async function Home() {
+  const services = await getServices().catch(() => []);
+  const featured = services.slice(0, 6);
+  const bookingHref = services[0] ? `/rooms/${services[0].id}` : '/#rooms';
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <MainLayout>
+      <section className="hero-section">
+        <div className="hero-orb hero-orb-left" />
+        <div className="hero-orb hero-orb-right" />
+
+        <div className="container hero-inner">
+          <p className="section-kicker">Welcome to LuxStay</p>
+          <h1 className="hero-title">
+            Where Luxury
+            <br />
+            <span>Meets Comfort</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="hero-description">
+            Discover our handpicked collection of premium rooms and suites, then complete your booking through a secure server-side flow backed by NestJS and Stripe.
           </p>
+          <div className="hero-actions">
+            <Link className="site-cta" href="/#rooms">
+              Explore Rooms
+            </Link>
+            <Link className="site-ghost-cta" href={bookingHref}>
+              Book Your Stay
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="feature-strip-ui">
+        <div className="container feature-grid-ui">
+          {features.map((feature) => (
+            <article key={feature.title} className="feature-item-ui">
+              <div className="feature-icon-ui">{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.desc}</p>
+            </article>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="featured-section" id="rooms">
+        <div className="container">
+          <div className="section-center-head">
+            <p className="section-kicker">Our Collection</p>
+            <h2>Featured Rooms & Suites</h2>
+            <p>
+              Each room is loaded from your backend services module and rendered server-side inside the public website.
+            </p>
+          </div>
+
+          {featured.length > 0 ? (
+            <>
+              <div className="service-grid-ui">
+                {featured.map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
+              </div>
+
+              {services.length > 6 ? (
+                <div className="section-button-wrap">
+                  <a className="site-outline-cta" href="#rooms">
+                    View All {services.length} Rooms
+                  </a>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="empty-panel-ui">
+              <p className="empty-emoji">🏨</p>
+              <p className="empty-title">Rooms coming soon</p>
+              <p className="empty-copy">Create services in the admin app and they will appear here automatically.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="cta-banner-ui">
+        <div className="container cta-banner-inner">
+          <h2>Ready to Book Your Stay?</h2>
+          <p>
+            Reserve your room today and let the backend handle payments, booking confirmation, and email delivery.
+          </p>
+          <Link className="site-cta" href={bookingHref}>
+            Book Now
+          </Link>
+        </div>
+      </section>
+    </MainLayout>
   );
 }
