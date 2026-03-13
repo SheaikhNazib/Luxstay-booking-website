@@ -27,7 +27,7 @@ export default async function RoomDetailsPage({ params }: RoomDetailsPageProps) 
               <h1 className="booking-title-ui">{service.name}</h1>
               <p className="booking-copy-ui">{service.description}</p>
             </div>
-            <Link className="site-outline-cta" href="/#rooms">
+            <Link className="site-outline-cta" href="/rooms">
               Back to Rooms
             </Link>
           </div>

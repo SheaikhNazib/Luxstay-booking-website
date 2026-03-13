@@ -90,9 +90,9 @@ export default async function Home() {
 
               {services.length > 6 ? (
                 <div className="section-button-wrap">
-                  <a className="site-outline-cta" href="#rooms">
+                  <Link className="site-outline-cta" href="/rooms">
                     View All {services.length} Rooms
-                  </a>
+                  </Link>
                 </div>
               ) : null}
             </>
