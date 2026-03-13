@@ -29,7 +29,6 @@ async function requestBackend<T>(
   const response = await fetch(`${backendUrl}${path}`, {
     ...init,
     headers,
-    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -48,12 +47,14 @@ async function requestBackend<T>(
 export const getServices = cache(async (): Promise<ServiceItem[]> => {
   return requestBackend<ServiceItem[]>('/services', {
     method: 'GET',
+    next: { revalidate: 60 },
   });
 });
 
 export const getServiceById = cache(async (id: string): Promise<ServiceItem> => {
   return requestBackend<ServiceItem>(`/services/${id}`, {
     method: 'GET',
+    next: { revalidate: 60 },
   });
 });
 
@@ -70,6 +71,7 @@ export async function registerUser(payload: {
   return requestBackend<AuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify(payload),
+    cache: 'no-store',
   });
 }
 
@@ -80,6 +82,7 @@ export async function loginUser(payload: {
   return requestBackend<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
+    cache: 'no-store',
   });
 }
 
@@ -94,6 +97,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       '/auth/me',
       {
         method: 'GET',
+        cache: 'no-store',
       },
       accessToken,
     );
@@ -111,6 +115,7 @@ export async function createBooking(payload: BookingPayload): Promise<string> {
   const response = await requestBackend<{ checkoutUrl: string | null }>('/bookings', {
     method: 'POST',
     body: JSON.stringify(payload),
+    cache: 'no-store',
   }, accessToken);
 
   if (!response.checkoutUrl) {
@@ -130,6 +135,7 @@ export async function getMyBookings(): Promise<BookingItem[]> {
     '/bookings/me',
     {
       method: 'GET',
+      cache: 'no-store',
     },
     accessToken,
   );
@@ -145,6 +151,7 @@ export async function getMyBookingById(id: string): Promise<BookingItem> {
     `/bookings/me/${id}`,
     {
       method: 'GET',
+      cache: 'no-store',
     },
     accessToken,
   );
@@ -161,6 +168,7 @@ export async function confirmMyBookingPayment(sessionId: string): Promise<Bookin
     {
       method: 'POST',
       body: JSON.stringify({ sessionId }),
+      cache: 'no-store',
     },
     accessToken,
   );
